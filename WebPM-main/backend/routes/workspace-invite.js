@@ -18,6 +18,9 @@ router.post(
   "/:workspaceId/invite",
   authenticateUser,
   validateRequest({
+    params: z.object({
+      workspaceId: z.string()
+    }),
     body: z.object({
       email: z.string().email(),
       role: z.enum(["member", "admin", "viewer"]).default("member")
@@ -26,23 +29,50 @@ router.post(
   createWorkspaceInvite
 );
 
-router.get("/:workspaceId/invites", authenticateUser, getWorkspaceInvites);
+router.get(
+  "/:workspaceId/invites", 
+  authenticateUser,
+  validateRequest({
+    params: z.object({
+      workspaceId: z.string()
+    })
+  }),
+  getWorkspaceInvites
+);
 
 router.post(
   "/:workspaceId/invites/:inviteId/accept",
   authenticateUser,
+  validateRequest({
+    params: z.object({
+      workspaceId: z.string(),
+      inviteId: z.string()
+    })
+  }),
   acceptWorkspaceInvite
 );
 
 router.post(
   "/:workspaceId/invites/:inviteId/reject",
   authenticateUser,
+  validateRequest({
+    params: z.object({
+      workspaceId: z.string(),
+      inviteId: z.string()
+    })
+  }),
   rejectWorkspaceInvite
 );
 
 router.delete(
   "/:workspaceId/invites/:inviteId",
   authenticateUser,
+  validateRequest({
+    params: z.object({
+      workspaceId: z.string(),
+      inviteId: z.string()
+    })
+  }),
   cancelWorkspaceInvite
 );
 

@@ -12,16 +12,12 @@ import type { LinksFunction } from "@remix-run/node";
 import ReactQueryProvider from "./provider/react-query-provider";
 import { ThemeProvider } from "./components/theme-provider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { AuthProvider } from "./provider/auth-context";
-import { Toaster } from "./components/ui/sonner";
+import { NotificationProvider } from "./context/NotificationProvider";
 
 // Import your global stylesheet. Make sure this file exists.
-import globalStyles from "./styles/global.css?url";
+import "./app.css";
 
-// This function tells Remix to include the stylesheet on every page.
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: globalStyles },
-];
+export const links: LinksFunction = () => [];
 
 // Ensure this VITE_GOOGLE_CLIENT_ID is configured in your .env file
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_FALLBACK_GOOGLE_CLIENT_ID";
@@ -40,15 +36,12 @@ export default function RootLayout() {
         <ReactQueryProvider>
           <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-              <AuthProvider>
+              <NotificationProvider>
                 <Outlet /> {/* Child routes will be rendered here */}
-              </AuthProvider>
+              </NotificationProvider>
             </ThemeProvider>
           </GoogleOAuthProvider>
         </ReactQueryProvider>
-        
-        {/* This component renders the notifications */}
-        <Toaster />
 
         <ScrollRestoration />
         <Scripts />

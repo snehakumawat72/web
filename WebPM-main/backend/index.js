@@ -8,6 +8,7 @@ import routes from "./routes/index.js";
 import { Server } from "socket.io";
 import http from "http";
 import notificationRoutes from './routes/notificationRoutes.js';
+import { initializeSocket } from './socket/socket-server.js';
 
 dotenv.config(); // Load .env variables
 
@@ -16,23 +17,8 @@ console.log("✅ DEBUG SENDGRID:", process.env.SENDGRID_API_KEY);
 const app = express();
 const server = http.createServer(app); // 👈 Important: use http server
 
-const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST"],
-  },
-});
-
-// ✅ Socket.IO connection handler
-io.on("connection", (socket) => {
-  console.log("✅ Socket.IO client connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("❌ Client disconnected:", socket.id);
-  });
-
-  // You can define custom events later here
-});
+// Initialize Socket.IO with proper authentication
+const io = initializeSocket(server);
 
 app.use(
   cors({
@@ -54,6 +40,7 @@ mongoose
 // ROUTES
 app.use('/uploads/avatars', express.static(path.join(process.cwd(), 'uploads/avatars')));
 app.use("/api-v1", routes);
+app.use('/api/notifications', notificationRoutes);
 
 // Test route
 app.get("/", async (req, res) => {
@@ -70,7 +57,6 @@ app.use((err, req, res, next) => {
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
 });
-app.use('/api/notifications', notificationRoutes);
 
 // 👇 Start server with http server (for Socket.IO support)
 const PORT = process.env.PORT || 5000;

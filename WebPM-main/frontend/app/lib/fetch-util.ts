@@ -106,27 +106,27 @@ const uploadFile = async <T>(url: string, formData: FormData): Promise<T> => {
 
 // Get all notifications
 export const getNotifications = async () => {
-  return fetchData("/notification");
+  return fetchData("/notifications");
 };
 
 // Get unread notification count
 export const getUnreadNotificationCount = async () => {
-  return fetchData("/notification/unread-count");
+  return fetchData("/notifications/unread-count");
 };
 
 // Mark specific notification as read
 export const markNotificationAsRead = async (notificationId: string) => {
-  return patchData(`/notification/${notificationId}/read`);
+  return updateData(`/notifications/mark-as-read/${notificationId}`, {});
 };
 
 // Mark all notifications as read
 export const markAllNotificationsAsRead = async () => {
-  return patchData("/notification/read-all");
+  return updateData("/notifications/mark-all-as-read", {});
 };
 
 // Delete a specific notification
 export const deleteNotification = async (notificationId: string) => {
-  return deleteData(`/notification/${notificationId}`);
+  return deleteData(`/notifications/${notificationId}`);
 };
 
 // ========================================
@@ -135,27 +135,27 @@ export const deleteNotification = async (notificationId: string) => {
 
 // Create workspace invite
 export const createWorkspaceInvite = async (workspaceId: string, inviteData: { email: string; role?: "member" | "admin" | "viewer" }) => {
-  return postData(`/notification/workspace/${workspaceId}/invite`, inviteData);
+  return postData(`/workspace-invites/${workspaceId}/invite`, inviteData);
 };
 
 // Get workspace invites
 export const getWorkspaceInvites = async (workspaceId: string) => {
-  return fetchData(`/notification/workspace/${workspaceId}/invites`);
+  return fetchData(`/workspace-invites/${workspaceId}/invites`);
 };
 
 // Accept workspace invite
 export const acceptWorkspaceInvite = async (workspaceId: string, inviteId: string) => {
-  return postData(`/notification/workspace/${workspaceId}/invites/${inviteId}/accept`, {});
+  return postData(`/workspace-invites/${workspaceId}/invites/${inviteId}/accept`, {});
 };
 
 // Reject workspace invite
 export const rejectWorkspaceInvite = async (workspaceId: string, inviteId: string) => {
-  return postData(`/notification/workspace/${workspaceId}/invites/${inviteId}/reject`, {});
+  return postData(`/workspace-invites/${workspaceId}/invites/${inviteId}/reject`, {});
 };
 
 // Cancel workspace invite
 export const cancelWorkspaceInvite = async (workspaceId: string, inviteId: string) => {
-  return deleteData(`/notification/workspace/${workspaceId}/invites/${inviteId}`);
+  return deleteData(`/workspace-invites/${workspaceId}/invites/${inviteId}`);
 };
 
 export { postData, fetchData, updateData, deleteData, patchData, fetchUtil, uploadFile };

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import socket from "@/lib/socket";
 import {
   getNotifications,
   markNotificationAsRead,
@@ -8,6 +7,7 @@ import {
   acceptWorkspaceInvite,
   rejectWorkspaceInvite
 } from "@/lib/fetch-util";
+import { useNotifications as useNotificationContext } from "@/context/NotificationProvider";
 
 export interface Notification {
   _id: string;
@@ -28,9 +28,10 @@ export interface Notification {
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const { unreadCount, setUnreadCount, socket } = useNotificationContext();
 
   // Fetch all notifications initially
   const fetchNotifications = async () => {
@@ -105,15 +106,18 @@ export function useNotifications() {
   useEffect(() => {
     fetchNotifications(); // initial load
 
-    socket.on("new_notification", (newNotif: Notification) => {
-      setNotifications(prev => [newNotif, ...prev]);
-      setUnreadCount(prev => prev + 1);
-    });
+    if (socket) {
+      socket.on("new_notification", (data: any) => {
+        if (data.notification) {
+          setNotifications(prev => [data.notification, ...prev]);
+        }
+      });
 
-    return () => {
-      socket.off("new_notification");
-    };
-  }, []);
+      return () => {
+        socket.off("new_notification");
+      };
+    }
+  }, [socket]);
 
   // Optional: polling fallback every 30s to refresh unread count
   useEffect(() => {

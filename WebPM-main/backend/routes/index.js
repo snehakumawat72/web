@@ -6,11 +6,13 @@ import projectRoutes from "./project.js";
 import taskRoutes from "./task.js";
 import userRoutes from "./user.js";
 import notificationRoutes from "./notification.js";
+import workspaceInviteRoutes from "./workspace-invite.js";
 
 const router = express.Router();
 
 router.use("/auth", authRoutes);
 router.use("/workspaces", workspaceRoutes);
+router.use("/workspace-invites", workspaceInviteRoutes);
 router.use("/projects", projectRoutes);
 router.use("/tasks", taskRoutes);
 router.use("/users", userRoutes);

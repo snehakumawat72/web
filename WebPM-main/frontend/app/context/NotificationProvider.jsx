@@ -1,43 +1,64 @@
-// frontend/src/context/NotificationProvider.jsx
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { toast } from 'sonner';
 
 const NotificationContext = createContext();
 
-export const useNotifications = () => useContext(NotificationContext);
+export const useNotifications = () => {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error('useNotifications must be used within a NotificationProvider');
+  }
+  return context;
+};
 
 export const NotificationProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // IMPORTANT: Make sure you store your token in localStorage after login
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     if (!token) {
       console.log("No token found, socket not connecting.");
       return;
     }
 
-    const socket = io(import.meta.env.VITE_API_URL, { auth: { token } });
+    const socketInstance = io(import.meta.env.VITE_API_URL?.replace('/api-v1', '') || 'http://localhost:5000', { 
+      auth: { token },
+      transports: ['websocket', 'polling']
+    });
 
-    socket.on('connect', () => console.log('Socket.IO connected successfully.'));
-    socket.on('connect_error', (err) => console.error('Socket.IO connection error:', err.message));
+    socketInstance.on('connect', () => {
+      console.log('Socket.IO connected successfully.');
+      setSocket(socketInstance);
+    });
+
+    socketInstance.on('connect_error', (err) => {
+      console.error('Socket.IO connection error:', err.message);
+    });
     
-    socket.on('new_notification', (data) => {
-      setUnreadCount(data.unreadCount);
-      toast.info(data.notification.message);
+    socketInstance.on('new_notification', (data) => {
+      console.log('New notification received:', data);
+      setUnreadCount(data.unreadCount || 0);
+      if (data.notification?.message) {
+        toast.info(data.notification.message);
+      }
     });
 
-    socket.on('unread_count_updated', (data) => {
-      setUnreadCount(data.unreadCount);
+    socketInstance.on('unread_count_updated', (data) => {
+      console.log('Unread count updated:', data);
+      setUnreadCount(data.unreadCount || 0);
     });
 
-    return () => socket.disconnect();
-  }, []); // This effect runs once on app load
+    return () => {
+      if (socketInstance) {
+        socketInstance.disconnect();
+      }
+    };
+  }, []);
 
   return (
-    <NotificationContext.Provider value={{ unreadCount, setUnreadCount }}>
+    <NotificationContext.Provider value={{ unreadCount, setUnreadCount, socket }}>
       {children}
     </NotificationContext.Provider>
   );

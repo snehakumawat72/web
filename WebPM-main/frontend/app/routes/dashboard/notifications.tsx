@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useNotifications } from '@/hooks/use-notifications';
+import { useNotifications } from "@/hooks/use-notifications";
 import {
   Bell,
   UserPlus,
@@ -113,7 +113,7 @@ export default function NotificationsPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <AlertCircle className="w-16 h-16 text-red-500 mb-4 mx-auto" />
-            <h3 className="text-xl font-semibold mb-2">Upcoming Feature</h3>
+            <h3 className="text-xl font-semibold mb-2">Error Loading Notifications</h3>
             <p className="text-muted-foreground">{error}</p>
           </div>
         </div>

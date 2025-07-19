@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    recipient: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "User", 
+      required: true 
+    },
     type: {
       type: String,
       enum: [
@@ -16,16 +20,43 @@ const notificationSchema = new mongoose.Schema(
       ],
       required: true,
     },
-    title: String,
-    message: String,
-    isRead: { type: Boolean, default: false },
-    senderName: String,
-    senderAvatar: String,
-    workspaceName: String,
-    projectName: String,
-    taskName: String,
-    inviteId: String,
-    workspaceId: String,
+    title: { 
+      type: String, 
+      required: true 
+    },
+    message: { 
+      type: String, 
+      required: true 
+    },
+    isRead: { 
+      type: Boolean, 
+      default: false 
+    },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+    workspace: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Workspace"
+    },
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project"
+    },
+    task: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Task"
+    },
+    inviteId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "WorkspaceInvite"
+    },
+    actionUrl: String,
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {}
+    }
   },
   { timestamps: true }
 );
